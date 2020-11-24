@@ -2,7 +2,7 @@
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 2.5.4 - 2020-08-07
+ * Version: 2.5.4 - 2020-11-24
  * License: MIT
  */angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.collapse","ui.bootstrap.tabindex","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.isClass","ui.bootstrap.datepicker","ui.bootstrap.position","ui.bootstrap.datepickerPopup","ui.bootstrap.debounce","ui.bootstrap.multiMap","ui.bootstrap.dropdown","ui.bootstrap.stackedMap","ui.bootstrap.modal","ui.bootstrap.paging","ui.bootstrap.pager","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
 angular.module("ui.bootstrap.tpls", ["uib/template/accordion/accordion-group.html","uib/template/accordion/accordion.html","uib/template/alert/alert.html","uib/template/carousel/carousel.html","uib/template/carousel/slide.html","uib/template/datepicker/datepicker.html","uib/template/datepicker/day.html","uib/template/datepicker/month.html","uib/template/datepicker/year.html","uib/template/datepickerPopup/popup.html","uib/template/modal/window.html","uib/template/pager/pager.html","uib/template/pagination/pagination.html","uib/template/tooltip/tooltip-html-popup.html","uib/template/tooltip/tooltip-popup.html","uib/template/tooltip/tooltip-template-popup.html","uib/template/popover/popover-html.html","uib/template/popover/popover-template.html","uib/template/popover/popover.html","uib/template/progressbar/bar.html","uib/template/progressbar/progress.html","uib/template/progressbar/progressbar.html","uib/template/rating/rating.html","uib/template/tabs/tab.html","uib/template/tabs/tabset.html","uib/template/timepicker/timepicker.html","uib/template/typeahead/typeahead-match.html","uib/template/typeahead/typeahead-popup.html"]);
@@ -4941,6 +4941,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
     'mouseenter': 'mouseleave',
     'click': 'click',
     'outsideClick': 'outsideClick',
+    'dismissClick': 'dismissClick',
     'focus': 'blur',
     'none': ''
   };
@@ -5125,6 +5126,8 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
             // By default, the tooltip is not open.
             // TODO add ability to start tooltip opened
             ttScope.isOpen = false;
+            
+            ttScope.isLoading = false;
 
             function toggleTooltipBind() {
               if (!ttScope.isOpen) {
@@ -5427,6 +5430,8 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
               triggers.show.forEach(function(trigger) {
                 if (trigger === 'outsideClick') {
                   element.off('click', toggleTooltipBind);
+                } else if (trigger === 'dismissClick') {
+                  element.off('click', hideTooltipBind);
                 } else {
                   element.off(trigger, showTooltipBind);
                   element.off(trigger, toggleTooltipBind);
@@ -5434,7 +5439,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                 element.off('keypress', hideOnEscapeKey);
               });
               triggers.hide.forEach(function(trigger) {
-                if (trigger === 'outsideClick') {
+                if (trigger === 'outsideClick' || trigger === 'dismissClick') {
                   $document.off('click', bodyHideTooltipBind);
                 } else {
                   element.off(trigger, hideTooltipBind);
@@ -5464,6 +5469,9 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                 triggers.show.forEach(function(trigger, idx) {
                   if (trigger === 'outsideClick') {
                     element.on('click', toggleTooltipBind);
+                    $document.on('click', bodyHideTooltipBind);
+                  } else if (trigger === 'dismissClick') {
+                    element.on('click', hideTooltipBind);
                     $document.on('click', bodyHideTooltipBind);
                   } else if (trigger === triggers.hide[idx]) {
                     element.on(trigger, toggleTooltipBind);
