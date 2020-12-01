@@ -163,7 +163,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
 
               if (!positionTimeout) {
                 positionTimeout = $timeout(function() {
-                  var ttPosition = $position.positionElements(element, tooltip, ttScope.placement, appendToBody || appendTo);
+                  var ttPosition = $position.positionElements(element, tooltip, ttScope.placement, appendTo || appendToBody);
                   var initialHeight = angular.isDefined(tooltip.offsetHeight) ? tooltip.offsetHeight : tooltip.prop('offsetHeight');
                   var elementPos = appendToBody ? $position.offset(element) : $position.position(element);
                   tooltip.css({ top: ttPosition.top + 'px', left: ttPosition.left + 'px' });
@@ -210,7 +210,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
             // By default, the tooltip is not open.
             // TODO add ability to start tooltip opened
             ttScope.isOpen = false;
-            
+
             ttScope.isLoading = false;
 
             function toggleTooltipBind() {
@@ -331,12 +331,13 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
 
               tooltipLinkedScope = ttScope.$new();
               tooltip = tooltipLinker(tooltipLinkedScope, function(tooltip) {
-                if (appendToBody) {
+                if (appendTo) {
+                  appendTo.append(tooltip);
+                }
+                else if (appendToBody) {
                   $document.find('body').append(tooltip);
                 }
-                else if(appendTo) {
-                  appendTo.append(tooltip);
-                } else {
+                else {
                   element.after(tooltip);
                 }
               });
@@ -591,6 +592,10 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
               }
 
               appendToVal = element.closest(attrs[appendToKey]);
+
+              if(!appendToVal.length) {
+                appendToVal = null;
+              }
             }
 
             appendTo = angular.isDefined(appendToVal) ? appendToVal : appendTo;
